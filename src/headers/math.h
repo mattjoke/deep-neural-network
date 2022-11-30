@@ -15,6 +15,10 @@ vector<vector<double>> matmul(const vector<vector<double>> &input1, const vector
 
 vector<vector<double>> add(const vector<vector<double>> &input1, const vector<double> &input2);
 
+vector<vector<double>> add(const vector<vector<double>> &input1, const vector<vector<double>> &input2);
+
+vector<double> add(const vector<double> &input1, const vector<double> &input2);
+
 vector<vector<double>> subtract(const vector<vector<double>> &input1, const vector<vector<double>> &input2);
 
 vector<vector<double>> subtract(const vector<double> &input1, const vector<vector<double>> &input2);

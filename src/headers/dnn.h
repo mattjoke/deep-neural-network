@@ -23,6 +23,13 @@ class dnn {
     vector<double> b2 = {};
     double learning_rate = 0.01;
 
+    // Momentum
+    vector<vector<double>> vW1 = {};
+    vector<double> vb1 = {};
+    vector<vector<double>> vW2 = {};
+    vector<double> vb2 = {};
+    double beta = 0.1;
+
 private:
     static int getIndexOfMaxValue(const vector<double> &input);
 
