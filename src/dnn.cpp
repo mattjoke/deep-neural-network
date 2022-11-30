@@ -136,7 +136,8 @@ void dnn::gradient_descent(const vector<vector<double>> &input, const vector<vec
 //        this->backward_propagation(input, targets);
         clock_t end = clock();
         cout << "Epoch: " << i + 1 << endl;
-        cout << "Last epoch took: " << (end - start) << " ms" << endl;
+
+        cout << "Last epoch took: " << double(end - start) / CLOCKS_PER_SEC << " s" << endl;
         cout << "Accuracy: " << this->accuracy(predict(input), targets) << endl;
     }
 }
