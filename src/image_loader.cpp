@@ -16,7 +16,7 @@ image_loader::image_loader(const string &images_path, const string &labels_path,
 
     this->indices = vector<double>(this->image_count);
     for (size_t i = 0; i < image_count; ++i) {
-        this->indices[i] = i;
+        this->indices[i] = static_cast<double>(i);
     }
     //this->split_to_validation();
     this->shuffle();
@@ -45,7 +45,7 @@ void image_loader::load_data(string const &images_path, string const &labels_pat
         this->images.push_back(image);
 
         vector<double> one_hot_encoded(10, 0);
-        int index = stod(label_line);
+        int index = static_cast<int>(stod(label_line));
         one_hot_encoded[index] = 1;
         this->labels.emplace_back(one_hot_encoded);
         this->label_count++;
@@ -60,7 +60,7 @@ void image_loader::load_data(string const &images_path, string const &labels_pat
 vector<vector<double>> image_loader::get_all_images() {
     vector<vector<double>> output;
     for (auto &i: this->indices) {
-        output.emplace_back(this->images[i]);
+        output.emplace_back(this->images[static_cast<int>(i)]);
     }
     return output;
 }
@@ -68,16 +68,16 @@ vector<vector<double>> image_loader::get_all_images() {
 vector<vector<double>> image_loader::get_all_labels() {
     vector<vector<double>> output;
     for (auto &i: this->indices) {
-        output.emplace_back(this->labels[i]);
+        output.emplace_back(this->labels[static_cast<int>(i)]);
     }
     return output;
 }
 
-vector<vector<double>> image_loader::get_images(int index) {
+vector<vector<double>> image_loader::get_images(const int index){
     return get_images(0, index);
 }
 
-vector<vector<double>> image_loader::get_images(int from, int to) {
+vector<vector<double>> image_loader::get_images(const int from, const int to) {
     vector<vector<double>> image;
     for (int i = from; i < to; i++) {
         image.push_back(this->images[i]);
@@ -85,11 +85,11 @@ vector<vector<double>> image_loader::get_images(int from, int to) {
     return image;
 }
 
-vector<vector<double>> image_loader::get_labels(int index) {
+vector<vector<double>> image_loader::get_labels(const int index) {
     return get_labels(0, index);
 }
 
-vector<vector<double>> image_loader::get_labels(int from, int to) {
+vector<vector<double>> image_loader::get_labels(const int from, const int to) {
     vector<vector<double>> label;
     for (int i = from; i < to; i++) {
         label.push_back(this->labels[i]);
@@ -99,9 +99,9 @@ vector<vector<double>> image_loader::get_labels(int from, int to) {
 
 void image_loader::split_to_validation() {
     this->validation_count = this->image_count / 10;
-    int image_cnt = this->image_count;
-    int diff = this->image_count - this->validation_count;
-    for (int i = image_cnt - 1; i >= diff; i--) {
+    size_t image_cnt = this->image_count;
+    size_t diff = this->image_count - this->validation_count;
+    for (size_t i = image_cnt - 1; i >= diff; i--) {
         this->validation_image.emplace_back(this->images[i]);
         this->validation_label.emplace_back(this->labels[i]);
         this->images.pop_back();
