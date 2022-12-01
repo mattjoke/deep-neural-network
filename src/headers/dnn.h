@@ -17,6 +17,11 @@ struct ForwardPassOutput {
 };
 
 class dnn {
+    static constexpr int INPUT_SIZE = 784;
+    static constexpr int HIDDEN_SIZE = 20;
+    static constexpr int OUTPUT_SIZE = 10;
+    static constexpr int BATCH_SIZE = 100;
+
     vector<vector<double>> W1 = {};
     vector<double> b1 = {};
     vector<vector<double>> W2 = {};

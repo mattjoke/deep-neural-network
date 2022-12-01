@@ -8,10 +8,10 @@
 #include "headers/math.h"
 
 dnn::dnn() {
-    this->W1 = vector<vector<double>>(784, vector<double>(20, 1));
-    this->b1 = vector<double>(20);
-    this->W2 = vector<vector<double>>(20, vector<double>(10, 0));
-    this->b2 = vector<double>(10);
+    this->W1 = vector<vector<double>>(INPUT_SIZE, vector<double>(HIDDEN_SIZE, 1));
+    this->b1 = vector<double>(HIDDEN_SIZE);
+    this->W2 = vector<vector<double>>(HIDDEN_SIZE, vector<double>(OUTPUT_SIZE, 0));
+    this->b2 = vector<double>(OUTPUT_SIZE);
     this->init_weights_biases();
 }
 
@@ -32,22 +32,22 @@ void dnn::init_weights_biases() {
         item = p1(gen);
     }
     // Initialize W2
-    normal_distribution<> d2(0, 2 / sqrt(20));
+    normal_distribution<> d2(0, 2 / sqrt(HIDDEN_SIZE));
     for (auto &row: this->W2) {
         for (auto &item: row) {
             item = d2(gen);
         }
     }
     // Initialize b2
-    normal_distribution<> p2(0, 2 / sqrt(20));
+    normal_distribution<> p2(0, 2 / sqrt(HIDDEN_SIZE));
     for (auto &item: this->b2) {
         item = p2(gen);
     }
 
-    this->vW1 = vector<vector<double>>(784, vector<double>(20, 0));
-    this->vb1 = vector<double>(20, 0);
-    this->vW2 = vector<vector<double>>(20, vector<double>(10, 0));
-    this->vb2 = vector<double>(10, 0);
+    this->vW1 = vector<vector<double>>(INPUT_SIZE, vector<double>(HIDDEN_SIZE, 0));
+    this->vb1 = vector<double>(HIDDEN_SIZE, 0);
+    this->vW2 = vector<vector<double>>(HIDDEN_SIZE, vector<double>(OUTPUT_SIZE, 0));
+    this->vb2 = vector<double>(OUTPUT_SIZE, 0);
 }
 
 
@@ -137,13 +137,12 @@ vector<vector<double>> dnn::softmax(const vector<vector<double>> &input) {
 
 void dnn::gradient_descent(const vector<vector<double>> &input, const vector<vector<double>> &targets,
                            int epochs) {
-    int batch_size = 100;
     for (int i = 0; i < epochs; i++) {
         clock_t start = clock();
-        for (size_t j = 0; j < input.size(); j += batch_size) {
+        for (size_t j = 0; j < input.size(); j += BATCH_SIZE) {
             vector<vector<double>> mini_batch = {};
             vector<vector<double>> mini_batch_label = {};
-            for (size_t k = j; k < j + batch_size; k++) {
+            for (size_t k = j; k < j + BATCH_SIZE; k++) {
                 mini_batch.emplace_back(input[k]);
                 mini_batch_label.emplace_back(targets[k]);
             }
@@ -154,7 +153,7 @@ void dnn::gradient_descent(const vector<vector<double>> &input, const vector<vec
         cout << "Epoch: " << i + 1 << endl;
 
         cout << "Last epoch took: " << double(end - start) / CLOCKS_PER_SEC << " s" << endl;
-        // cout << "Accuracy: " << this->accuracy(predict(input), targets) << endl;
+        cout << "Accuracy: " << dnn::accuracy(predict(input), targets) << endl;
     }
 }
 
