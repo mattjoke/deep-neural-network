@@ -15,7 +15,7 @@ image_loader::image_loader(const string &images_path, const string &labels_path,
     this->load_data(images_path, labels_path);
 
     this->indices = vector<double>(this->image_count);
-    for (int i = 0; i < image_count; ++i) {
+    for (size_t i = 0; i < image_count; ++i) {
         this->indices[i] = i;
     }
     //this->split_to_validation();
