@@ -124,10 +124,10 @@ void dnn::gradient_descent(const vector<vector<double>> &input, const vector<vec
     int batch_size = 100;
     for (int i = 0; i < epochs; i++) {
         clock_t start = clock();
-        for (int j = 0; j < input.size(); j += batch_size) {
+        for (size_t j = 0; j < input.size(); j += batch_size) {
             vector<vector<double>> mini_batch = {};
             vector<vector<double>> mini_batch_label = {};
-            for (int k = j; k < j + batch_size; k++) {
+            for (size_t k = j; k < j + batch_size; k++) {
                 mini_batch.emplace_back(input[k]);
                 mini_batch_label.emplace_back(targets[k]);
             }
@@ -145,7 +145,7 @@ void dnn::gradient_descent(const vector<vector<double>> &input, const vector<vec
 int dnn::getIndexOfMaxValue(const vector<double> &input) {
     int index = 0;
     double max = 0;
-    for (int i = 0; i < input.size(); i++) {
+    for (size_t i = 0; i < input.size(); i++) {
         if (input[i] > max) {
             max = input[i];
             index = i;
@@ -159,7 +159,7 @@ double dnn::accuracy(const vector<vector<double>> &predicted, const vector<vecto
         throw invalid_argument("The predicted input should have the same size as the ground truth!");
     }
     int correct = 0;
-    for (int i = 0; i < predicted.size(); i++) {
+    for (size_t i = 0; i < predicted.size(); i++) {
         int pr = getIndexOfMaxValue(predicted[i]);
         int gt = getIndexOfMaxValue(ground_truth[i]);
         if (pr == gt) {

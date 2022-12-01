@@ -6,7 +6,7 @@
 
 vector<vector<double>> transpose(const vector<vector<double>> &input) {
     vector<vector<double>> output;
-    for (int i = 0; i < input[0].size(); i++) {
+    for (size_t i = 0; i < input[0].size(); i++) {
         vector<double> row;
         for (const auto &j: input) {
             row.push_back(j[i]);
@@ -22,7 +22,7 @@ vector<vector<double>> matmul(const vector<vector<double>> &input1, const vector
         vector<double> row;
         for (const auto &j: transpose(input1)) {
             double sum = 0;
-            for (int k = 0; k < i.size(); k++) {
+            for (size_t k = 0; k < i.size(); k++) {
                 sum += i[k] * j[k];
             }
             row.push_back(sum);
@@ -34,9 +34,9 @@ vector<vector<double>> matmul(const vector<vector<double>> &input1, const vector
 
 vector<vector<double>> add(const vector<vector<double>> &input1, const vector<double> &input2) {
     vector<vector<double>> output;
-    for (int i = 0; i < input1.size(); i++) {
+    for (size_t i = 0; i < input1.size(); i++) {
         vector<double> row;
-        for (int j = 0; j < input1[0].size(); j++) {
+        for (size_t j = 0; j < input1[0].size(); j++) {
             row.push_back(input1[i][j] + input2[j]);
         }
         output.push_back(row);
@@ -46,9 +46,9 @@ vector<vector<double>> add(const vector<vector<double>> &input1, const vector<do
 
 vector<vector<double>> subtract(const vector<vector<double>> &input1, const vector<vector<double>> &input2) {
     vector<vector<double>> output;
-    for (int i = 0; i < input1.size(); i++) {
+    for (size_t i = 0; i < input1.size(); i++) {
         vector<double> row;
-        for (int j = 0; j < input1[0].size(); j++) {
+        for (size_t j = 0; j < input1[0].size(); j++) {
             row.push_back(input1[i][j] - input2[i][j]);
         }
         output.push_back(row);
@@ -58,9 +58,9 @@ vector<vector<double>> subtract(const vector<vector<double>> &input1, const vect
 
 vector<vector<double>> subtract(const vector<double> &input1, const vector<vector<double>> &input2) {
     vector<vector<double>> output;
-    for (int i = 0; i < input2.size(); i++) {
+    for (size_t i = 0; i < input2.size(); i++) {
         vector<double> row;
-        for (int j = 0; j < input2[0].size(); j++) {
+        for (size_t j = 0; j < input2[0].size(); j++) {
             row.push_back(input1[j] - input2[i][j]);
         }
         output.push_back(row);
@@ -70,9 +70,9 @@ vector<vector<double>> subtract(const vector<double> &input1, const vector<vecto
 
 vector<vector<double>> subtract(const vector<vector<double>> &input1, const vector<double> &input2) {
     vector<vector<double>> output;
-    for (int i = 0; i < input1.size(); i++) {
+    for (size_t i = 0; i < input1.size(); i++) {
         vector<double> row;
-        for (int j = 0; j < input1[0].size(); j++) {
+        for (size_t j = 0; j < input1[0].size(); j++) {
             row.push_back(input1[i][j] - input2[j]);
         }
         output.push_back(row);
@@ -82,7 +82,7 @@ vector<vector<double>> subtract(const vector<vector<double>> &input1, const vect
 
 vector<double> subtract_bias(const vector<double> &input1, const vector<double> &input2) {
     vector<double> output;
-    for (int i = 0; i < input1.size(); i++) {
+    for (size_t i = 0; i < input1.size(); i++) {
         output.push_back(input1[i] - input2[i]);
     }
     return output;
@@ -90,9 +90,9 @@ vector<double> subtract_bias(const vector<double> &input1, const vector<double> 
 
 vector<vector<double>> multiply(double input1, const vector<vector<double>> &input2) {
     vector<vector<double>> output;
-    for (int i = 0; i < input2.size(); i++) {
+    for (size_t i = 0; i < input2.size(); i++) {
         vector<double> row;
-        for (int j = 0; j < input2[0].size(); j++) {
+        for (size_t j = 0; j < input2[0].size(); j++) {
             row.push_back(input1 * input2[i][j]);
         }
         output.push_back(row);
@@ -102,9 +102,9 @@ vector<vector<double>> multiply(double input1, const vector<vector<double>> &inp
 
 vector<vector<double>> multiply(const vector<vector<double>> &input1, const vector<vector<double>> &input2) {
     vector<vector<double>> output;
-    for (int i = 0; i < input1.size(); i++) {
+    for (size_t i = 0; i < input1.size(); i++) {
         vector<double> row;
-        for (int j = 0; j < input1[0].size(); j++) {
+        for (size_t j = 0; j < input1[0].size(); j++) {
             row.push_back(input1[i][j] * input2[i][j]);
         }
         output.push_back(row);
@@ -114,7 +114,7 @@ vector<vector<double>> multiply(const vector<vector<double>> &input1, const vect
 
 vector<double> sum(const vector<vector<double>> &input) {
     vector<double> output;
-    for (int i = 0; i < input[0].size(); i++) {
+    for (size_t i = 0; i < input[0].size(); i++) {
         double sum = 0;
         for (const auto &j: input) {
             sum += j[i];
