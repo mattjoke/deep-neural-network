@@ -43,6 +43,11 @@ void dnn::init_weights_biases() {
     for (auto &item: this->b2) {
         item = p2(gen);
     }
+
+    this->vW1 = vector<vector<double>>(784, vector<double>(20, 0));
+    this->vb1 = vector<double>(20, 0);
+    this->vW2 = vector<vector<double>>(20, vector<double>(10, 0));
+    this->vb2 = vector<double>(10, 0);
 }
 
 
@@ -78,10 +83,21 @@ void dnn::backward_propagation(const vector<vector<double>> &input, const vector
     vector<vector<double>> dW1 = multiply(1.0 / output_size, matmul(dZ1, transpose(input)));
     vector<double> db1 = multiply_bias(1.0 / output_size, sum(dZ1));
 
-    this->W1 = subtract(this->W1, multiply(this->learning_rate, dW1));
-    this->b1 = subtract_bias(this->b1, multiply_bias(this->learning_rate, db1));
-    this->W2 = subtract(this->W2, multiply(this->learning_rate, dW2));
-    this->b2 = subtract_bias(this->b2, multiply_bias(this->learning_rate, db2));
+    vector<vector<double>> newvW1 = add(multiply(this->beta, this->vW1), multiply(1 - this->beta, dW1));
+    this->W1 = subtract(this->W1, multiply(this->learning_rate, newvW1));
+    this->vW1 = newvW1;
+
+    vector<double> newvb1 = add(multiply_bias(this->beta, this->vb1), multiply_bias(1 - this->beta, db1));
+    this->b1 = subtract_bias(this->b1, multiply_bias(this->learning_rate, newvb1));
+    this->vb1 = newvb1;
+
+    vector<vector<double>> newvW2 = add(multiply(this->beta, this->vW2), multiply(1 - this->beta, dW2));
+    this->W2 = subtract(this->W2, multiply(this->learning_rate, newvW2));
+    this->vW2 = newvW2;
+
+    vector<double> newvb2 = add(multiply_bias(this->beta, this->vb2), multiply_bias(1 - this->beta, db2));
+    this->b2 = subtract_bias(this->b2, multiply_bias(this->learning_rate, newvb2));
+    this->vb2 = newvb2;
 }
 
 vector<vector<double>> dnn::ReLU(vector<vector<double>> &vector) {
@@ -138,7 +154,7 @@ void dnn::gradient_descent(const vector<vector<double>> &input, const vector<vec
         cout << "Epoch: " << i + 1 << endl;
 
         cout << "Last epoch took: " << double(end - start) / CLOCKS_PER_SEC << " s" << endl;
-        cout << "Accuracy: " << this->accuracy(predict(input), targets) << endl;
+        // cout << "Accuracy: " << this->accuracy(predict(input), targets) << endl;
     }
 }
 
