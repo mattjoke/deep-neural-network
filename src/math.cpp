@@ -46,9 +46,9 @@ vector<vector<double>> add(const vector<vector<double>> &input1, const vector<do
 
 vector<vector<double>> add(const vector<vector<double>> &input1, const vector<vector<double>> &input2) {
     vector<vector<double>> output;
-    for (int i = 0; i < input1.size(); i++) {
+    for (size_t i = 0; i < input1.size(); i++) {
         vector<double> row;
-        for (int j = 0; j < input1[0].size(); j++) {
+        for (size_t j = 0; j < input1[0].size(); j++) {
             row.push_back(input1[i][j] + input2[i][j]);
         }
         output.push_back(row);
@@ -58,7 +58,7 @@ vector<vector<double>> add(const vector<vector<double>> &input1, const vector<ve
 
 vector<double> add(const vector<double> &input1, const vector<double> &input2) {
     vector<double> output;
-    for (int i = 0; i < input1.size(); i++) {
+    for (size_t i = 0; i < input1.size(); i++) {
         output.push_back(input1[i] + input2[i]);
     }
     return output;
