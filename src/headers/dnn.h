@@ -6,6 +6,7 @@
 #define DEEP_NEURAL_NETWORK_DNN_H
 
 #include <vector>
+#include "image_loader.h"
 
 using namespace std;
 
@@ -21,14 +22,22 @@ class dnn {
     vector<double> b1 = {};
     vector<vector<double>> W2 = {};
     vector<double> b2 = {};
-    double learning_rate = 0.01;
+    double learning_rate = 0.001;
 
     // Momentum
     vector<vector<double>> vW1 = {};
     vector<double> vb1 = {};
     vector<vector<double>> vW2 = {};
     vector<double> vb2 = {};
-    double beta = 0.1;
+    double beta = 0.9;
+
+    // RMSProp
+    vector<vector<double>> sW1 = {};
+    vector<double> sb1 = {};
+    vector<vector<double>> sW2 = {};
+    vector<double> sb2 = {};
+    double beta2 = 0.999;
+    double epsilon = 1e-8;
 
 private:
     static int getIndexOfMaxValue(const vector<double> &input);
@@ -54,6 +63,8 @@ public:
     static double accuracy(const vector<vector<double>> &predicted, const vector<vector<double>> &ground_truth);
 
     vector<vector<double>> predict(const vector<vector<double>> &input);
+
+    void init(image_loader *ih, size_t epochs);
 };
 
 

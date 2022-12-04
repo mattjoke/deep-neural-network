@@ -19,9 +19,10 @@ int main() {
     cout << "Initializing network" << endl;
     auto nn = dnn();
     cout << "Starting training" << endl;
-    vector<vector<double>> images = ih.get_all_images();
-    vector<vector<double>> labels = ih.get_all_labels();
-    nn.gradient_descent(images, labels, 5);
+//    vector<vector<double>> images = ih.get_all_images();
+//    vector<vector<double>> labels = ih.get_all_labels();
+    nn.init(&ih, 10); // Gradient descent, 5 epochs, shuffle every epoch
+//    nn.gradient_descent(images, labels, 5);
     cout << "Training finished" << endl << endl;
 
     // Accuracy on test set

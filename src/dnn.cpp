@@ -8,11 +8,21 @@
 #include "headers/math.h"
 
 dnn::dnn() {
-    this->W1 = vector<vector<double>>(784, vector<double>(20, 1));
-    this->b1 = vector<double>(20);
-    this->W2 = vector<vector<double>>(20, vector<double>(10, 0));
+    this->W1 = vector<vector<double>>(784, vector<double>(128, 1));
+    this->b1 = vector<double>(128);
+    this->W2 = vector<vector<double>>(128, vector<double>(10, 0));
     this->b2 = vector<double>(10);
     this->init_weights_biases();
+}
+
+void dnn::init(image_loader *ih, size_t epochs) {
+    for (size_t i = 0; i < epochs; i++) {
+        cout << "Epoch " << i + 1 << endl;
+        this->gradient_descent(ih->get_all_images(), ih->get_all_labels(), 1);
+        ih->shuffle();
+        // Learning rate decay
+        //this->learning_rate = (1.0 / (i + 1)) * this->learning_rate;
+    }
 }
 
 void dnn::init_weights_biases() {
@@ -32,22 +42,29 @@ void dnn::init_weights_biases() {
         item = p1(gen);
     }
     // Initialize W2
-    normal_distribution<> d2(0, 2 / sqrt(20));
+    normal_distribution<> d2(0, 2 / sqrt(128));
     for (auto &row: this->W2) {
         for (auto &item: row) {
             item = d2(gen);
         }
     }
     // Initialize b2
-    normal_distribution<> p2(0, 2 / sqrt(20));
+    normal_distribution<> p2(0, 2 / sqrt(128));
     for (auto &item: this->b2) {
         item = p2(gen);
     }
 
-    this->vW1 = vector<vector<double>>(784, vector<double>(20, 0));
-    this->vb1 = vector<double>(20, 0);
-    this->vW2 = vector<vector<double>>(20, vector<double>(10, 0));
+    // Momentum
+    this->vW1 = vector<vector<double>>(784, vector<double>(128, 0));
+    this->vb1 = vector<double>(128, 0);
+    this->vW2 = vector<vector<double>>(128, vector<double>(10, 0));
     this->vb2 = vector<double>(10, 0);
+
+    // RMSProp
+    this->sW1 = vector<vector<double>>(784, vector<double>(128, 0));
+    this->sb1 = vector<double>(128, 0);
+    this->sW2 = vector<vector<double>>(128, vector<double>(10, 0));
+    this->sb2 = vector<double>(10, 0);
 }
 
 
@@ -83,21 +100,35 @@ void dnn::backward_propagation(const vector<vector<double>> &input, const vector
     vector<vector<double>> dW1 = multiply(1.0 / output_size, matmul(dZ1, transpose(input)));
     vector<double> db1 = multiply_bias(1.0 / output_size, sum(dZ1));
 
+
+    // Use momentum to update weights and biases
     vector<vector<double>> newvW1 = add(multiply(this->beta, this->vW1), multiply(1 - this->beta, dW1));
-    this->W1 = subtract(this->W1, multiply(this->learning_rate, newvW1));
+    vector<vector<double>> newsW1 = add(multiply(this->beta2, this->sW1), multiply(1 - this->beta, multiply(dW1, dW1)));
+    this->W1 = subtract(this->W1, multiply(this->learning_rate, divide(newvW1, sqrt(add(newsW1, this->epsilon)))));
     this->vW1 = newvW1;
+    this->sW1 = newsW1;
 
     vector<double> newvb1 = add(multiply_bias(this->beta, this->vb1), multiply_bias(1 - this->beta, db1));
-    this->b1 = subtract_bias(this->b1, multiply_bias(this->learning_rate, newvb1));
+    vector<double> newsb1 = add(multiply_bias(this->beta2, this->sb1),
+                                multiply_bias(1 - this->beta, multiply_bias(db1, db1)));
+    this->b1 = subtract_bias(this->b1,
+                             multiply_bias(this->learning_rate, divide(newvb1, sqrt(add_bias(newsb1, this->epsilon)))));
     this->vb1 = newvb1;
+    this->sb1 = newsb1;
 
     vector<vector<double>> newvW2 = add(multiply(this->beta, this->vW2), multiply(1 - this->beta, dW2));
-    this->W2 = subtract(this->W2, multiply(this->learning_rate, newvW2));
+    vector<vector<double>> newsW2 = add(multiply(this->beta2, this->sW2), multiply(1 - this->beta, multiply(dW2, dW2)));
+    this->W2 = subtract(this->W2, multiply(this->learning_rate, divide(dW2, sqrt(add(newsW2, this->epsilon)))));
     this->vW2 = newvW2;
+    this->sW2 = newsW2;
 
     vector<double> newvb2 = add(multiply_bias(this->beta, this->vb2), multiply_bias(1 - this->beta, db2));
-    this->b2 = subtract_bias(this->b2, multiply_bias(this->learning_rate, newvb2));
+    vector<double> newsb2 = add(multiply_bias(this->beta2, this->sb2),
+                                multiply_bias(1 - this->beta, multiply_bias(db2, db2)));
+    this->b2 = subtract_bias(this->b2,
+                             multiply_bias(this->learning_rate, divide(newvb2, sqrt(add_bias(newsb2, this->epsilon)))));
     this->vb2 = newvb2;
+    this->sb2 = newsb2;
 }
 
 vector<vector<double>> dnn::ReLU(vector<vector<double>> &vector) {
@@ -154,7 +185,7 @@ void dnn::gradient_descent(const vector<vector<double>> &input, const vector<vec
         cout << "Epoch: " << i + 1 << endl;
 
         cout << "Last epoch took: " << double(end - start) / CLOCKS_PER_SEC << " s" << endl;
-        // cout << "Accuracy: " << this->accuracy(predict(input), targets) << endl;
+        cout << "Accuracy: " << this->accuracy(predict(input), targets) << endl;
     }
 }
 
