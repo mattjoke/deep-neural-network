@@ -4,6 +4,8 @@
 
 #include <random>
 #include <iostream>
+#include <functional>
+#include <thread>
 #include "headers/dnn.h"
 #include "headers/math.h"
 
@@ -51,26 +53,78 @@ void dnn::init_weights_biases() {
 }
 
 
-ForwardPassOutput dnn::forward_propagation(const vector<vector<double>> &input) {
-    vector<vector<double>> Z1 = add(matmul(this->W1, input), this->b1);
-    vector<vector<double>> A1 = ReLU(Z1);
-    vector<vector<double>> Z2 = add(matmul(this->W2, A1), this->b2);
-    vector<vector<double>> A2 = softmax(Z2);
-    return {
-            Z1,
-            A1,
-            Z2,
-            A2
-    };
+void dnn::forward_propagation(const vector<vector<double>> &input, ForwardPassOutput &forward_pass_output) {
+    forward_pass_output.Z1 = add(matmul(this->W1, input), this->b1);
+    forward_pass_output.A1 = ReLU(forward_pass_output.Z1);
+    forward_pass_output.Z2 = add(matmul(this->W2, forward_pass_output.A1), this->b2);
+    forward_pass_output.A2 = softmax(forward_pass_output.Z2);
 }
 
+// input - batch of images
 void dnn::backward_propagation(const vector<vector<double>> &input, const vector<vector<double>> &targets) {
     if (input.size() != targets.size()) {
         throw invalid_argument("Backpropagation needs arguments with the same size!");
     }
     int output_size = targets.size();
+    vector<vector<double>> in1 = {};
+    vector<vector<double>> in2 = {};
+    vector<vector<double>> in3 = {};
+    vector<vector<double>> in4 = {};
+    ForwardPassOutput forward_pass_output1;
+    ForwardPassOutput forward_pass_output2;
+    ForwardPassOutput forward_pass_output3;
+    ForwardPassOutput forward_pass_output4;
 
-    ForwardPassOutput forward_pass_output = forward_propagation(input);
+    for(size_t i = 0; i < input.size(); i++) {
+        switch (i % 4) {
+            case 0: in1.emplace_back(input[i]);
+            break;
+            case 1: in2.emplace_back(input[i]);
+            break;
+            case 2: in3.emplace_back(input[i]);
+            break;
+            case 3: in4.emplace_back(input[i]);
+            break;
+            default: in1.emplace_back(input[i]);
+            break;
+        }
+    }
+
+    auto thread1 = std::thread(&dnn::forward_propagation, this, std::ref(in1), std::ref(forward_pass_output1));
+    auto thread2 = std::thread(&dnn::forward_propagation, this, std::ref(in2), std::ref(forward_pass_output2));
+    auto thread3 = std::thread(&dnn::forward_propagation, this, std::ref(in3), std::ref(forward_pass_output3));
+    auto thread4 = std::thread(&dnn::forward_propagation, this, std::ref(in4), std::ref(forward_pass_output4));
+    thread1.join();
+    thread2.join();
+    thread3.join();
+    thread4.join();
+    ForwardPassOutput forward_pass_output;
+    for (size_t i=0; i < forward_pass_output1.Z1.size(); i++) {
+        forward_pass_output.Z1.emplace_back(forward_pass_output1.Z1[i]);
+        forward_pass_output.Z1.emplace_back(forward_pass_output2.Z1[i]);
+        forward_pass_output.Z1.emplace_back(forward_pass_output3.Z1[i]);
+        forward_pass_output.Z1.emplace_back(forward_pass_output4.Z1[i]);
+    }
+    for (size_t i=0; i < forward_pass_output1.A1.size(); i++) {
+        forward_pass_output.A1.emplace_back(forward_pass_output1.A1[i]);
+        forward_pass_output.A1.emplace_back(forward_pass_output2.A1[i]);
+        forward_pass_output.A1.emplace_back(forward_pass_output3.A1[i]);
+        forward_pass_output.A1.emplace_back(forward_pass_output4.A1[i]);
+    }
+    for (size_t i=0; i < forward_pass_output1.A1.size(); i++) {
+        forward_pass_output.Z2.emplace_back(forward_pass_output1.Z2[i]);
+        forward_pass_output.Z2.emplace_back(forward_pass_output2.Z2[i]);
+        forward_pass_output.Z2.emplace_back(forward_pass_output3.Z2[i]);
+        forward_pass_output.Z2.emplace_back(forward_pass_output4.Z2[i]);
+    }
+    for (size_t i=0; i < forward_pass_output1.A2.size(); i++) {
+        forward_pass_output.A2.emplace_back(forward_pass_output1.A2[i]);
+        forward_pass_output.A2.emplace_back(forward_pass_output2.A2[i]);
+        forward_pass_output.A2.emplace_back(forward_pass_output3.A2[i]);
+        forward_pass_output.A2.emplace_back(forward_pass_output4.A2[i]);
+    }
+
+    //forward_propagation(input, forward_pass_output);
     vector<vector<double>> Z1 = forward_pass_output.Z1;
     vector<vector<double>> A1 = forward_pass_output.A1;
     vector<vector<double>> Z2 = forward_pass_output.Z2;
@@ -185,5 +239,7 @@ double dnn::accuracy(const vector<vector<double>> &predicted, const vector<vecto
 }
 
 vector<vector<double>> dnn::predict(const vector<vector<double>> &input) {
-    return forward_propagation(input).A2;
+    ForwardPassOutput forward_pass_output;
+    forward_propagation(input, forward_pass_output);
+    return forward_pass_output.A2;
 }

@@ -18,7 +18,7 @@ struct ForwardPassOutput {
 
 class dnn {
     static constexpr int INPUT_SIZE = 784;
-    static constexpr int HIDDEN_SIZE = 20;
+    static constexpr int HIDDEN_SIZE = 128;
     static constexpr int OUTPUT_SIZE = 10;
     static constexpr int BATCH_SIZE = 100;
 
@@ -43,7 +43,8 @@ public:
 
     void init_weights_biases();
 
-    ForwardPassOutput forward_propagation(const vector<vector<double>> &input);
+    void forward_propagation(const vector<vector<double>> &input,
+                                          ForwardPassOutput &forward_pass_output);
 
     void backward_propagation(const vector<vector<double>> &input, const vector<vector<double>> &targets);
 

@@ -2,6 +2,7 @@
 // Created by Matej Hakoš on 11/29/2022.
 //
 
+#include <thread>
 #include "headers/math.h"
 
 vector<vector<double>> transpose(const vector<vector<double>> &input) {
@@ -30,6 +31,18 @@ vector<vector<double>> matmul(const vector<vector<double>> &input1, const vector
         output.push_back(row);
     }
     return output;
+}
+
+void addHalf(const vector<vector<double>> &input1, const vector<double> &input2,
+             vector<vector<double>> &output,
+             int begin, int end) {
+    for (int i = begin; i < end; i++) {
+        vector<double> row;
+        for (size_t j = 0; j < input1[0].size(); j++) {
+            row.push_back(input1[i][j] + input2[j]);
+        }
+        output.push_back(row);
+    }
 }
 
 vector<vector<double>> add(const vector<vector<double>> &input1, const vector<double> &input2) {

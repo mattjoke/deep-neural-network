@@ -21,7 +21,7 @@ int main() {
     cout << "Starting training" << endl;
     vector<vector<double>> images = ih.get_all_images();
     vector<vector<double>> labels = ih.get_all_labels();
-    nn.gradient_descent(images, labels, 5);
+    nn.gradient_descent(images, labels, 50);
     cout << "Training finished" << endl << endl;
 
     // Accuracy on test set
