@@ -24,7 +24,7 @@ class dnn {
     static constexpr int HIDDEN_SIZE = 89;
     static constexpr int HIDDEN_SIZE2 = 30;
     static constexpr int OUTPUT_SIZE = 10;
-    int BATCH_SIZE = 100; // batch size should be able to divide 10K, 60K and should be divisible by number of threads
+    int BATCH_SIZE = 64; // batch size should be able to divide 10K, 60K and should be divisible by number of threads -> FIXED (any arbitrary number)
 
     vector<vector<double>> W1 = {};
     vector<double> b1 = {};

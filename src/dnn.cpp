@@ -26,9 +26,9 @@ void dnn::init(image_loader *ih, size_t epochs) {
     for (size_t i = 0; i < epochs; i++) {
         cout << "Epoch " << i + 1 << endl;
         this->gradient_descent(ih->get_all_images(), ih->get_all_labels(), 1);
-        vector<vector<double>> predictions = this->predict(ih->get_all_images());
-        double total_loss = loss(predictions, ih->get_all_labels());
-        cout << "Loss for this epoch: " << total_loss << endl;
+//        vector<vector<double>> predictions = this->predict(ih->get_all_images());
+//        double total_loss = loss(predictions, ih->get_all_labels());
+//        cout << "Loss for this epoch: " << total_loss << endl;
         ih->shuffle();
     }
 }
@@ -294,10 +294,22 @@ void dnn::gradient_descent(const vector<vector<double>> &input, const vector<vec
         for (size_t j = 0; j < input.size(); j += BATCH_SIZE) {
             vector<vector<double>> mini_batch = {};
             vector<vector<double>> mini_batch_label = {};
-            for (size_t k = j; k < j + BATCH_SIZE; k++) {
-                mini_batch.emplace_back(input[k]);
-                mini_batch_label.emplace_back(targets[k]);
+            if (j + BATCH_SIZE < input.size()) {
+                for (size_t k = j; k < j + BATCH_SIZE; k++) {
+                    mini_batch.emplace_back(input[k]);
+                    mini_batch_label.emplace_back(targets[k]);
+                }
+            } else {
+                for (size_t k = j; k < input.size(); k++) {
+                    mini_batch.push_back(input[k]);
+                    mini_batch_label.push_back(targets[k]);
+                }
+                for (size_t k = 0; k < input.size() - j; ++k) {
+                    mini_batch.push_back(input[k]);
+                    mini_batch_label.push_back(targets[k]);
+                }
             }
+
             this->backward_propagation(mini_batch, mini_batch_label);
         }
 //        this->backward_propagation(input, targets);
