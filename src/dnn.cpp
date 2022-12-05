@@ -23,16 +23,8 @@ void dnn::init(image_loader *ih, size_t epochs) {
         this->gradient_descent(ih->get_all_images(), ih->get_all_labels(), 1);
         ih->shuffle();
         // Learning rate decay
+        //setLR(getLR() * (1.0 / (i + 1)));
         //this->learning_rate = (1.0 / (i + 1)) * this->learning_rate;
-        if (i == 0) {
-            this->setLR(0.001 * 0.9);
-        }
-        if (i == 5) {
-            this->setLR(0.001 * 0.2);
-        }
-        if (i == 7) {
-            this->setLR(0.001 * 0.1);
-        }
     }
 }
 
@@ -41,26 +33,26 @@ void dnn::init_weights_biases() {
     mt19937 gen(rd());
 
     // Initialize W1
-    normal_distribution<> d1(0, 2 / sqrt(784));
+    normal_distribution<> d1(0, 2 / sqrt(INPUT_SIZE));
     for (auto &row: this->W1) {
         for (auto &item: row) {
             item = d1(gen);
         }
     }
     // Initialize b1
-    normal_distribution<> p1(0, 2 / sqrt(784));
+    normal_distribution<> p1(0, 2 / sqrt(INPUT_SIZE));
     for (auto &item: this->b1) {
         item = p1(gen);
     }
     // Initialize W2
-    normal_distribution<> d2(0, 2 / sqrt(20));
+    normal_distribution<> d2(0, 2 / sqrt(HIDDEN_SIZE));
     for (auto &row: this->W2) {
         for (auto &item: row) {
             item = d2(gen);
         }
     }
     // Initialize b2
-    normal_distribution<> p2(0, 2 / sqrt(20));
+    normal_distribution<> p2(0, 2 / sqrt(HIDDEN_SIZE));
     for (auto &item: this->b2) {
         item = p2(gen);
     }
@@ -124,6 +116,7 @@ void dnn::backward_propagation(const vector<vector<double>> &input, const vector
     thread2.join();
     thread3.join();
     thread4.join();
+
     ForwardPassOutput forward_pass_output;
     for (size_t i=0; i < forward_pass_output1.Z1.size(); i++) {
         forward_pass_output.Z1.emplace_back(forward_pass_output1.Z1[i]);
@@ -137,7 +130,7 @@ void dnn::backward_propagation(const vector<vector<double>> &input, const vector
         forward_pass_output.A1.emplace_back(forward_pass_output3.A1[i]);
         forward_pass_output.A1.emplace_back(forward_pass_output4.A1[i]);
     }
-    for (size_t i=0; i < forward_pass_output1.A1.size(); i++) {
+    for (size_t i=0; i < forward_pass_output1.Z2.size(); i++) {
         forward_pass_output.Z2.emplace_back(forward_pass_output1.Z2[i]);
         forward_pass_output.Z2.emplace_back(forward_pass_output2.Z2[i]);
         forward_pass_output.Z2.emplace_back(forward_pass_output3.Z2[i]);

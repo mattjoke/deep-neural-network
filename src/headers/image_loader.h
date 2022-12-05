@@ -20,6 +20,15 @@ private:
     vector<vector<double>> validation_image;
     vector<vector<double>> validation_label;
 
+    vector<double> means;
+public:
+    const vector<double> &getMeans() const;
+
+    const vector<double> &getVariances() const;
+
+private:
+    vector<double> variances;
+
     // Indices, by which the Image Holder "picks" a batch
     vector<double> indices;
 
@@ -33,6 +42,10 @@ public:
     image_loader(const string &images_path, const string &labels_path, size_t load_limit = -1);
 
     void load_data(string const &images_path, string const &labels_path);
+
+    void normaliseImages();
+
+    void normaliseImages(const vector<double>& mean, const vector<double>& variance);
 
     vector<vector<double>> get_all_images();
 

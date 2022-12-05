@@ -119,6 +119,58 @@ void image_loader::shuffle() {
     std::shuffle(this->indices.begin(), this->indices.end(), gen);
 }
 
+void image_loader::normaliseImages() {
+    static constexpr size_t IMGSIZE = 784;
+    // compute sum of values for each pixel
+    vector<double> means_m(IMGSIZE, 0);
+    for (const auto& image: images) {
+        for (size_t i = 0; i < IMGSIZE; i++) {
+            means_m[i] += image[i];
+        }
+    }
+    // divide by number of images to get the mean
+    for (double & mean : means_m) {
+        mean = mean / images.size();
+    }
+
+    // compute sum of squared differences from mean
+    vector<double> variances_m(IMGSIZE, 0);
+    for (const auto& image : images) {
+        for (size_t i = 0; i < IMGSIZE; i++) {
+            means_m[i] += pow(image[i] - means_m[i], 2);
+        }
+    }
+    // divide by number of images to get variance
+    for (double & stdev : variances_m) {
+        stdev = stdev / images.size();
+    }
+
+    //
+    for (auto image : images) {
+        for (size_t i = 0; i < IMGSIZE; i++) {
+            image[i] = (image[i] - means_m[i]) / variances_m[i];
+        }
+    }
+    means = means_m;
+    variances = variances_m;
+}
+
+void image_loader::normaliseImages(const vector<double>& mean, const vector<double>& variance) {
+    for (auto image : images) {
+        for (size_t i = 0; i < images[0].size(); i++) {
+            image[i] = (image[i] - mean[i]) / variance[i];
+        }
+    }
+}
+
+const vector<double> &image_loader::getMeans() const {
+    return means;
+}
+
+const vector<double> &image_loader::getVariances() const {
+    return variances;
+}
+
 
 
 
