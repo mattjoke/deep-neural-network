@@ -8,8 +8,8 @@ using namespace std;
 int main() {
     cout << "Loading data" << endl;
     clock_t start = clock();
-    string image_path = "../data/fashion_mnist_train_vectors.csv";
-    string label_path = "../data/fashion_mnist_train_labels.csv";
+    string image_path = "./data/fashion_mnist_train_vectors.csv";
+    string label_path = "./data/fashion_mnist_train_labels.csv";
     auto ih = image_loader(image_path, label_path);
     ih.normaliseImages();
     clock_t end = clock();
@@ -20,12 +20,12 @@ int main() {
     cout << "Initializing network" << endl;
     auto nn = dnn();
     cout << "Starting training" << endl;
-    nn.init(&ih, 5); // Gradient descent, 5 epochs, shuffle every epoch
+    nn.init(&ih, 10); // Gradient descent, 5 epochs, shuffle every epoch
     cout << "Training finished" << endl << endl;
 
     // Accuracy on test set
-    string test_image_path = "../data/fashion_mnist_test_vectors.csv";
-    string test_label_path = "../data/fashion_mnist_test_labels.csv";
+    string test_image_path = "./data/fashion_mnist_test_vectors.csv";
+    string test_label_path = "./data/fashion_mnist_test_labels.csv";
 
     auto test_images_loader = image_loader(test_image_path, test_label_path);
     test_images_loader.normaliseImages(ih.getMeans(), ih.getVariances());

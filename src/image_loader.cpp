@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <random>
+#include <algorithm>
 
 #include "headers/image_loader.h"
 
