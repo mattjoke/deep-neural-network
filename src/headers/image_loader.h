@@ -16,28 +16,22 @@ private:
     vector<vector<double>> images;
     vector<vector<double>> labels;
 
-    // FOr hyperparameter checks
+    // For hyperparameter checks
     vector<vector<double>> validation_image;
     vector<vector<double>> validation_label;
 
     vector<double> means;
-public:
-    const vector<double> &getMeans() const;
-
-    const vector<double> &getVariances() const;
-
-private:
     vector<double> variances;
 
     // Indices, by which the Image Holder "picks" a batch
     vector<double> indices;
 
+    // Number of images and labels actually loaded
     size_t load_limit;
 public:
-    size_t image_count{};
-    size_t label_count{};
-
-    size_t validation_count{};
+    size_t image_count = 0;
+    size_t label_count = 0;
+    size_t validation_count = 0;
 
     image_loader(const string &images_path, const string &labels_path, size_t load_limit = -1);
 
@@ -45,11 +39,15 @@ public:
 
     void normaliseImages();
 
-    void normaliseImages(const vector<double>& mean, const vector<double>& variance);
+    void normaliseImages(const vector<double> &mean, const vector<double> &variance);
 
     vector<vector<double>> get_all_images();
 
+    vector<vector<double>> get_all_images_unshuffled();
+
     vector<vector<double>> get_all_labels();
+
+    vector<vector<double>> get_all_labels_unshuffled();
 
     vector<vector<double>> get_images(int index);
 
@@ -62,6 +60,10 @@ public:
     void split_to_validation();
 
     void shuffle();
+
+    const vector<double> &getMeans() const;
+
+    const vector<double> &getVariances() const;
 };
 
 

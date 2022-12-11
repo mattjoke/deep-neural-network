@@ -66,14 +66,14 @@ public:
         learning_rate = newLR;
     }
 
-    double getLR() {
+    double getLR() const {
         return learning_rate;
     }
 
     void init_weights_biases();
 
     void forward_propagation(const vector<vector<double>> &input,
-                                          ForwardPassOutput &forward_pass_output);
+                             ForwardPassOutput &forward_pass_output);
 
     void backward_propagation(const vector<vector<double>> &input, const vector<vector<double>> &targets);
 
@@ -84,7 +84,7 @@ public:
     static vector<vector<double>> softmax(const vector<vector<double>> &input);
 
     void
-    gradient_descent(const vector<vector<double>> &input, const vector<vector<double>> &targets, int epochs);
+    gradient_descent(const vector<vector<double>> &input, const vector<vector<double>> &targets);
 
     static double accuracy(const vector<vector<double>> &predicted, const vector<vector<double>> &ground_truth);
 
@@ -92,7 +92,7 @@ public:
 
     vector<vector<double>> predict(const vector<vector<double>> &input);
 
-    void init(image_loader *ih, size_t epochs);
+    void train(image_loader *ih, size_t epochs);
 };
 
 
